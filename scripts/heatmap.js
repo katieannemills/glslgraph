@@ -283,8 +283,8 @@ export class heatmap {
             this.currentYaxisMinValue = 0
             this.currentXaxisMaxValue = zvalues.x.reduce((a, b) => Math.max(a, b), -Infinity);
             this.currentYaxisMaxValue = zvalues.y.reduce((a, b) => Math.max(a, b), -Infinity);
-            this.xglobalEnd = this.currentXaxisMaxValue;
-            this.yglobalEnd = this.currentYaxisMaxValue;
+            this.xglobalEnd = zvalues.xBins;
+            this.yglobalEnd = zvalues.yBins;
 
             this.instances = zvalues.x.length;
         } else {
@@ -297,8 +297,8 @@ export class heatmap {
             this.currentYaxisMinValue = 0
             this.currentXaxisMaxValue = this.nXbins - 1;
             this.currentYaxisMaxValue = this.nYbins - 1;
-            this.xglobalEnd = this.currentXaxisMaxValue;
-            this.yglobalEnd = this.currentYaxisMaxValue;
+            this.xglobalEnd = zvalues[0].length;
+            this.yglobalEnd = zvalues.length;
             this.instances = this.nXbins * this.nYbins;
         } 
     }
@@ -686,9 +686,9 @@ export class heatmap {
     onDragComplete(start, end) {
         // set everything for zooming in
         let left = Math.max(0,Math.min(start[0], end[0]));
-        let right = Math.min(this.xglobalEnd+1, Math.max(start[0], end[0]));
+        let right = Math.min(this.xglobalEnd, Math.max(start[0], end[0]));
         let bottom = Math.max(0,Math.min(start[1], end[1]));
-        let top = Math.min(this.yglobalEnd+1, Math.max(start[1], end[1]));
+        let top = Math.min(this.yglobalEnd, Math.max(start[1], end[1]));
         this.zoomX(left, right);
         this.zoomY(bottom, top);
         
@@ -772,9 +772,9 @@ export class heatmap {
                     newXmax += -newXmin;
                     newXmin = 0;
                 }
-                if(newXmax > this.xglobalEnd+1){
+                if(newXmax > this.xglobalEnd){
                     newXmin -= (newXmax - this.xglobalEnd - 1);
-                    newXmax = this.xglobalEnd+1;
+                    newXmax = this.xglobalEnd;
                 }
                 let newYmin = Math.floor(yBin - ypro * newYrange);
                 let newYmax = Math.ceil(newYmin + newYrange);
@@ -782,9 +782,9 @@ export class heatmap {
                     newYmax += -newYmin;
                     newYmin = 0;
                 }
-                if(newYmax > this.yglobalEnd+1){
+                if(newYmax > this.yglobalEnd){
                     newYmin -= (newYmax - this.yglobalEnd - 1);
-                    newYmax = this.yglobalEnd+1;
+                    newYmax = this.yglobalEnd;
                 }
 
                 this.zoomX(newXmin, newXmax);
